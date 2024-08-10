@@ -35,16 +35,18 @@
  </thead>
  <tbody>
 
- <tr class="linha">
-<td class="linha">{{empresa.nome}}</td>
- <td class="linha">
- <div class="progress">
- <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
- </div>
- </td>
- <td class="linha">Status</td>
- <td class="linha"><a href="/empresarios/empresa/{{empresa.id}}" class="btn btn-indigo-normal">ver</a></td>
- </tr>
+{% for empresa in empresas %}
+    <tr class="linha">
+        <td class="linha">{{empresa.nome}}</td>
+        <td class="linha">
+        <div class="progress">
+        <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        </td>
+        <td class="linha">Status</td>
+        <td class="linha"><a href="{% url "empresa" empresa.id %}" class="btn btn-indigo-normal">ver</a></td>
+    </tr>
+{% endfor %}
 
 
 
