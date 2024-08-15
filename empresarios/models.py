@@ -47,3 +47,23 @@ class Empresas(models.Model):
         if date.today() >self.data_final_captacao:
             return mark_safe('<span class="badge bg-success">Captação finalizada</span>')
         return mark_safe('<span class="badge bg-primary">Em captação</span>')
+    
+    @property
+    def valuation(self):
+        return f'{(100 * self.valor) / self.percentual_equity:.2f}'
+    
+class Documentos(models.Model):
+    empresa = models.ForeignKey(Empresas, on_delete=models.DO_NOTHING)
+    titulo = models.CharField(max_length=50)
+    arquivo = models.FileField(upload_to="Documentos")
+
+    def __str__(self):
+        return self.titulo
+
+class Metricas(models.Model):
+    empresa = models.ForeignKey(Empresas, on_delete=models.DO_NOTHING)
+    titulo = models.CharField(max_length=30)
+    valor = models.FloatField()
+    
+    def __str__(self):
+        return self.titulo

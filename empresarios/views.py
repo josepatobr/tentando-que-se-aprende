@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Empresas
+from .models import Empresas, Documentos, Metricas
 from django.contrib import messages
 from django.contrib.messages import constants
 
@@ -70,4 +70,60 @@ def listar_empresas(request):
 def empresa(request, id):
     empresa = Empresas.objects.get(id=id)
     if request.method == "GET":
-        return render(request, "empresa.html", {"empresa": empresa})
+        documentos =  Documentos.objects.filter(empresa=empresa)
+        return render(request, "empresa.html", {"empresa": empresa, "documentos": documentos})
+    if empresa.user != request.user:
+        messages.add_message(request, constants.ERROR, "Você enviou para uma empresa errada")
+        return redirect (f'/empresario/listar_empresa')
+
+def add_doc(request, id):
+    empresa = Empresas.objects.get(id=id)
+    titulo = request.POST.get('titulo')
+    arquivo = request.FILES.get('arquivo')
+    extensao = arquivo.name.split('.')
+    
+    if empresa.user != request.user:
+        messages.add_message(request, constants.ERROR, "Você enviou para uma empresa errada")
+        return redirect (f'/empresario/listar_empresa')
+
+    if extensao[1] != 'pdf':
+        messages.add_message(request, constants.ERROR, "O arquivo precisa ser em PDF")
+        return redirect (f'/empresario/empresa/{id}')
+
+    if not arquivo:
+            messages.add_message(request, constants.ERROR, "Arquivo não pode ser vazio")
+            return redirect (f'/empresario/empresa/{id}')
+
+    documento = Documentos(
+        empresa = empresa,
+        titulo = titulo,
+        arquivo = arquivo)
+    documento.save() 
+    messages.add_message(request, constants.SUCCESS, "Arquivo salvo")
+    return redirect (f'/empresarios/empresa/{id}')
+
+def excluir_dc(request, id):
+    documento = Documentos.objects.get(id=id)
+    if documento.empresa.user != request.user:
+        messages.add_message(request, constants.ERROR, "Esse documento não é seu")
+        return redirect(f'/empresarios/empresa/{empresa.id}')
+    
+    documento.delete()
+    messages.add_message(request, constants.SUCCESS, "Documento excluído com sucesso")
+    return redirect(f'/empresarios/empresa/{documento.empresa.id}')
+
+def add_metrica(request, id):
+    empresa = Empresas.objects.get(id=id)
+    titulo = request.POST.get('titulo')
+    valor = request.POST.get('valor')
+    
+    metrica = Metricas(
+    empresa=empresa,
+    titulo=titulo,
+    valor=valor
+    )
+    metrica.save()
+    messages.add_message(request, constants.SUCCESS, "Métrica cadastrada com sucesso")
+    return redirect(f'/empresarios/empresa/{empresa.id}')
+
+
