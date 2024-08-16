@@ -6,21 +6,22 @@
 
 {% endblock 'head' %}
     
-    {% block 'body' %}
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-2 d-flex justify-content-center bg-img ">
-                </div>
-                <div class="col-md-10 d-flex justify-content-center bg-color-dark form-auth">
-                    <div class="container-form">
+{% block 'body' %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 d-flex justify-content-center bg-img ">
+            
+            </div>
+            <div class="col-md-10 d-flex justify-content-center bg-color-dark form-auth">
+                <div class="container-form">
                     <h1 class="text-logo">START.SE</h1>
                     {% if messages %}
-                    <br>
+                        <br>
                         {% for message in messages %}
-                    <section class="alert {{message.tags}}">
-                        {{message}}
-                    </section>
-                    {% endfor %}
+                            <section class="alert {{message.tags}}">
+                                {{message}}
+                            </section>
+                        {% endfor %}
                     {% endif %}
                    
                     <h1>Cadastre-se</h1>
@@ -31,16 +32,16 @@
                         <br>
                         <label>Senha</label>
                         <input type="password" class="form-control input-pers" name="senha" placeholder="Digite sua senha">
-                        <br>
-                        <label>Confirmar senha</label>
+                            <br>
+                            <label>Confirmar senha</label>
                         <input type="password" class="form-control input-pers" name="confirmar_senha" placeholder="Confirme sua senha">
-                        <div class="centralizar">
+                            <div class="centralizar">
                             <input type="submit" class="btn btn-indigo" value="Cadastrar">
-                            <a href="{% url 'logar'%}" class="texto">Já possuo uma conta</a>
-                        </div>
+                                <a href="{% url 'logar'%}" class="texto">Já possuo uma conta</a>
+                            </div>
                     </form>
+                </div>
             </div>
         </div>
-        </div>
-        </div>
-    {% endblock 'body' %}
+    </div>
+{% endblock 'body' %}

@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from empresarios.models import Empresas
 
 
 def sugestao(request):
+    if not request.user.is_authenticated:
+        return redirect ('/usuarios/logar')
     areas = Empresas.area_choices
     if request.method == "GET": 
         return render(request, 'sugestao.html', {'areas': areas})
@@ -26,4 +28,8 @@ def sugestao(request):
     if percentual >= 1:
         empresas_selecionadas.append(empresa)
         return render(request, 'sugestao.html', {'empresas': empresas_selecionadas, 'areas': areas})
+
+def ver_empresa(request, id):
+    empresa = Empresas.objects.get(id=id)
+    return render(request, 'ver_empresa.html', {'empresa': empresa})
 
