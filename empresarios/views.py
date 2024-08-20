@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Empresas, Documentos, Metricas
+from investidores.models import PropostaInvestimento
 from django.contrib import messages
 from django.contrib.messages import constants
 
@@ -9,10 +10,7 @@ def cadastrar_empresa(request):
         return redirect("logar")
 
     if request.method == "GET":
-        return render(
-            request,
-            "cadastrar_empresa.html",
-            {
+        return render(request,"cadastrar_empresa.html",{
                 "tempo_existencia": Empresas.tempo_existencia_choices,
                 "areas": Empresas.area_choices,
             },
@@ -71,7 +69,15 @@ def empresa(request, id):
     empresa = Empresas.objects.get(id=id)
     if request.method == "GET":
         documentos =  Documentos.objects.filter(empresa=empresa)
-        return render(request, "empresa.html", {"empresa": empresa, "documentos": documentos})
+        propostas_investimentos = PropostaInvestimento.objects.filter(empresa=empresa)
+        percentual_vendido = 0
+        for pi in propostas_investimentos:
+            if pi.status == 'PA':
+                percentual_vendido = percentual_vendido + pi.percentual
+
+        propostas_investimentos_enviados = propostas_investimentos.filter(status='PE')
+        return render(request, "empresa.html", {"empresa": empresa, "documentos": documentos, 'propostas_investimentos_enviados':propostas_investimentos_enviados, 'percentual_vendido': int(percentual_vendido)})
+    
     if empresa.user != request.user:
         messages.add_message(request, constants.ERROR, "Você enviou para uma empresa errada")
         return redirect (f'/empresario/listar_empresa')
@@ -126,4 +132,16 @@ def add_metrica(request, id):
     messages.add_message(request, constants.SUCCESS, "Métrica cadastrada com sucesso")
     return redirect(f'/empresarios/empresa/{empresa.id}')
 
+def gerenciar_proposta(request, id):
+    acao = request.GET.get('acao')
+    pi = PropostaInvestimento.objects.get(id=id)
+
+    if acao == 'aceitar':
+        messages.add_message(request, constants.SUCCESS, 'Proposta aceita')
+        pi.status = 'PA'
+    elif acao == 'recusar':
+        messages.add_message(request, constants.SUCCESS, 'Proposta recusada')
+        pi.status = 'PR'
+    pi.save()
+    return redirect(f'/empresarios/empresa/{pi.empresa.id}')
 

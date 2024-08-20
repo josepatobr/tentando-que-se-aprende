@@ -41,6 +41,10 @@ class Empresas(models.Model):
     def __str__(self):
         return f'{self.user.username} | {self.nome}'
     
+    @property
+    def valuation(self):
+        return (100*float(self.valor)) / float(self.percentual)
+    
 
     @property
     def status(self):
